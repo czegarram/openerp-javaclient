@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ruqu</groupId>
-  <artifactId>Template-Spring</artifactId>
+  <artifactId>OpenErp-JavaClient</artifactId>
   <packaging>war</packaging>
   <version>0.1</version>
-  <name>Salt Maven Webapp</name>
+  <name>OpenErp JavaClient</name>
   <url>http://maven.apache.org</url>
   
   <repositories>
@@ -134,7 +134,7 @@
     
   </dependencies>
   <build>
-    <finalName>Template-Spring</finalName>
+    <finalName>OpenErp-JavaClient</finalName>
     <plugins>
     
     	<plugin>
