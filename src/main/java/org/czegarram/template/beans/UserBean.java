@@ -1,8 +1,11 @@
 package org.czegarram.template.beans;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -13,7 +16,12 @@ import javax.faces.context.FacesContext;
 
 import org.primefaces.context.RequestContext;
 import org.czegarram.template.domain.User;
+import org.czegarram.template.helpers.XmlRpcConnector;
 import org.czegarram.template.service.IUserService;
+
+import com.debortoliwines.openerp.api.ObjectAdapter;
+import com.debortoliwines.openerp.api.Row;
+import com.debortoliwines.openerp.api.Session;
 
 
 @ManagedBean(name = "UserBean")
@@ -35,69 +43,7 @@ public class UserBean implements Serializable{
 	User userNuevo=new User();
 
 	private boolean accionEditar = true;
-	
-	
-	/* SETTER AND GETTERS
-	*  ==================
-	*/	
-	
-	public IUserService getUserService() {
-		return userService;
-	}
 
-
-	public void setUserService(IUserService userService) {
-		this.userService = userService;
-	}
-
-
-	public List<User> getUsers() {
-		return users;
-	}
-
-
-	public void setUsers(List<User> users) {
-		this.users = users;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-
-	public User getUserNuevo() {
-		return userNuevo;
-	}
-
-
-	public void setUserNuevo(User userNuevo) {
-		this.userNuevo = userNuevo;
-	}
-	
-	public boolean isAccionEditar() {
-		return accionEditar;
-	}
-
-
-	public void setAccionEditar(boolean accionEditar) {
-		this.accionEditar = accionEditar;
-	}
-
-
-	/* CUSTOM LABELS  */
-	
-	public String etiBotonDialog(){
-		if(accionEditar){
-			return "Editar";
-		}else{
-			return "Nuevo";
-		}
-	}
 
 
  	/* CONSTRUCTOR AND POSTCONSTRUCT 
@@ -105,13 +51,50 @@ public class UserBean implements Serializable{
  	*/
 
 	public UserBean() {  
-        users = new ArrayList<User>();  
+        users = new ArrayList<User>(); 
    
     }  
 	
 	@PostConstruct
 	public void init(){				
-		users = userService.getUsers();
+		//users = userService.getUsers();
+		/*int result;
+		try {
+			result = XmlRpcConnector.Connect("localhost", 8069, "ruqu", "admin", "admin");
+			System.out.println("Result :"+result);
+		} catch (MalformedURLException e) {
+			System.out.println("Result :"+e.getMessage());
+			e.printStackTrace();
+		}
+		
+		System.out.println(".............................");
+		
+		try {
+			Vector<String> v = XmlRpcConnector.getDatabaseList("localhost", 8069);
+			System.out.println("Result: ");
+			System.out.println(v);
+		} catch (MalformedURLException e) {
+			System.out.println("Result :"+e.getMessage());
+			e.printStackTrace();
+		}
+		
+		XmlRpcConnector.test("localhost", 8069);*/
+		Session openERPSession = new Session("localhost", 8069, "ruqu", "admin", "admin");
+		try {
+		    // startSession logs into the server and keeps the userid of the logged in user
+		    openERPSession.startSession();
+		    ObjectAdapter partnerAd = openERPSession.getObjectAdapter("res.partner");
+		    
+		    Row newPartner = partnerAd.getNewRow(new String[]{"name", "ref"});
+		    newPartner.put("name", "Dennis Torres");
+		    newPartner.put("ref", "ref");
+		    partnerAd.createObject(newPartner);
+
+		    System.out.println("New Row ID: " + newPartner.getID());
+		} catch (Exception e) {
+		    System.out.println("Error while reading data from server:\n\n" + e.getMessage());
+		}
+		
 	}
 
 	/* AJAX BUTTON EVENTS  
@@ -121,6 +104,7 @@ public class UserBean implements Serializable{
 	
 	public void nuevoEvent(){
 		accionEditar=false;
+		System.out.println("hola");
 		limpiarCampos();
 	}
 	
@@ -251,7 +235,17 @@ public class UserBean implements Serializable{
         context.addCallbackParam("eliminado", eliminado);  
     } 
 	
-
+	/* CUSTOM LABELS  */
+	
+	public String etiBotonDialog(){
+		if(accionEditar){
+			return "Editar";
+		}else{
+			return "Nuevo";
+		}
+	}
+	
+	
     /*
 	*	RUTINAS ADICIONALES
 	*	===================
@@ -270,6 +264,56 @@ public class UserBean implements Serializable{
 		
 	}
 	
+	/* SETTER AND GETTERS
+	*  ==================
+	*/	
 	
+	public IUserService getUserService() {
+		return userService;
+	}
+
+
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
+
+
+	public List<User> getUsers() {
+		return users;
+	}
+
+
+	public void setUsers(List<User> users) {
+		this.users = users;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+
+	public User getUserNuevo() {
+		return userNuevo;
+	}
+
+
+	public void setUserNuevo(User userNuevo) {
+		this.userNuevo = userNuevo;
+	}
+	
+	public boolean isAccionEditar() {
+		return accionEditar;
+	}
+
+
+	public void setAccionEditar(boolean accionEditar) {
+		this.accionEditar = accionEditar;
+	}
+
 
 }

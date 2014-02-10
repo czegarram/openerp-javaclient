@@ -4,3 +4,4 @@
 .settings/*
 target/*
 /target
+src/main/resources/rebel.xml
